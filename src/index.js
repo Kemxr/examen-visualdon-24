@@ -141,6 +141,11 @@ Promise.all([
 
         // --- 3.2 Carte à bulles ---
      
+        const map2 = L.map('map2').setView([46.6, 6.6], 9);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map2);
 
         // Préparation des densités par id de commune
         const densityById = new Map();
@@ -167,7 +172,7 @@ Promise.all([
                     fillOpacity: 0.6
                 })
                     .bindTooltip(`${f.properties.name} - ${density.toFixed(1)} arbres/km²`)
-                    .addTo(map);
+                    .addTo(map2);
             }
         });
 

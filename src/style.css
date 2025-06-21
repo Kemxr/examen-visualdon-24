@@ -9,6 +9,12 @@ body {
     width: 100%;
 }
 
+#map2 {
+  height: 500px;
+  width: 100%;
+  margin-bottom: 2em;
+}
+
 .legend {
     background: white;
     padding: 6px;
