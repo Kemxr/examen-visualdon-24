@@ -73,10 +73,67 @@ Promise.all([
 
         // --- 3.1 Carte choroplète ---
 
+        const densities = arbresCommunes.features.map(d => d.properties.n_trees / d.properties.area_km2);
+        const color = d3.scaleQuantile()
+            .domain(densities)
+            .range(d3.schemeGreens[5]);
 
+        const map = L.map('map').setView([46.6, 6.6], 9);
 
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
+        function style(feature) {
+            const density = feature.properties.n_trees / feature.properties.area_km2;
+            return {
+                fillColor: color(density),
+                weight: 1,
+                opacity: 1,
+                color: 'white',
+                fillOpacity: 0.7
+            };
+        }
 
+        function highlightFeature(e) {
+            e.target.setStyle({ weight: 3 });
+        }
+
+        function resetHighlight(e) {
+            geojson.resetStyle(e.target);
+        }
+
+        function onEachFeature(feature, layer) {
+            const density = (feature.properties.n_trees / feature.properties.area_km2).toFixed(1);
+            layer.bindTooltip(`${feature.properties.name} - ${density} arbres/km²`);
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight
+            });
+        }
+
+        const geojson = L.geoJson(arbresCommunes, {
+            style,
+            onEachFeature
+        }).addTo(map);
+
+        // Légende
+        const legend = L.control({ position: 'bottomright' });
+        legend.onAdd = function () {
+            const div = L.DomUtil.create('div', 'legend');
+            const quantiles = color.quantiles();
+            const grades = [d3.min(densities), ...quantiles];
+            for (let i = 0; i < grades.length; i++) {
+                const from = grades[i];
+                const to = grades[i + 1];
+                div.innerHTML +=
+                    `<i style="background:${color(from + 1e-6)}"></i> ` +
+                    from.toFixed(0) + (to ? `&ndash;${to.toFixed(0)}<br>` : '+');
+            }
+            return div;
+        };
+        legend.addTo(map);
 
 
 
