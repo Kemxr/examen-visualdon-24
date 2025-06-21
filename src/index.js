@@ -142,6 +142,35 @@ Promise.all([
         // --- 3.2 Carte à bulles ---
      
 
+        // Préparation des densités par id de commune
+        const densityById = new Map();
+        arbresCommunes.features.forEach(f => {
+            densityById.set(f.properties.id, f.properties.n_trees / f.properties.area_km2);
+        });
+
+        const maxDensityBubble = d3.max(Array.from(densityById.values()));
+
+        // Échelle racine carrée pour que l'aire du cercle soit proportionnelle
+        // à la densité d'arbres par km²
+        const radius = d3.scaleSqrt()
+            .domain([0, maxDensityBubble])
+            .range([0, 20]);
+
+        centresCommunes.features.forEach(f => {
+            const density = densityById.get(f.properties.id);
+            if (density !== undefined) {
+                L.circleMarker([f.geometry.coordinates[1], f.geometry.coordinates[0]], {
+                    radius: radius(density),
+                    fillColor: 'steelblue',
+                    color: '#fff',
+                    weight: 1,
+                    fillOpacity: 0.6
+                })
+                    .bindTooltip(`${f.properties.name} - ${density.toFixed(1)} arbres/km²`)
+                    .addTo(map);
+            }
+        });
+
 
 
 
