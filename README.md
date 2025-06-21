@@ -161,6 +161,7 @@ Veuillez suivre les instructions suivantes :
 
 3. Justifiez le choix du type d'échelle que vous avez choisi pour le rayon des cercles   **5 points** 
 
+Pour que la surface des cercles soit proportionnelle au nombre d'arbres par km², une échelle racine carrée (scaleSqrt) a été utilisée. Ainsi, la perception visuelle de la taille reflète la densité réelle.
 
 
 ### 3.3 Diagramme en bâtons (20 points)
